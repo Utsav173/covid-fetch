@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>covid data fetch</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous" />
+</head>
+
+<body>
+  <div class="container-fluid text-center">
+    <div class="container align-items-center justify-content-center my-4">
+      <h3 class="page-header">Covid data fetch by date</h3>
+      <div class="container">
+        <form class="form-horizontal justify-content-center align-items-center my-4" role="search">
+          <div class="d-flex mb-3">
+            <label for="date" class="form-control-label me-auto p-2">Date: </label><input class="form-control p-2"
+              type="date" name="date" placeholder="yyyy-mm-dd" />
+          </div>
+          <input type="submit" class="btn btn-primary" onclick="damta(this.form); return false;" />
+        </form>
+      </div>
+    </div>
+    <div class="container align-items-center justify-content-center my-4">
+      <div class="row align-items-center justify-connten-center">
+        <table class="table shadow">
+          <tr>
+            <td>New cases</td>
+            <td id="msg">...</td>
+          </tr>
+          <tr>
+            <td>New deceased</td>
+            <td id="des">...</td>
+          </tr>
+          <tr>
+            <td>Total confirmed</td>
+            <td id="des1">...</td>
+          </tr>
+          <tr>
+            <td>Total recovered</td>
+            <td id="des2">...</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <hr />
+    <div class="container align-items-center justify-content-center my-4">
+        <form class="form-inline" id="form1">
+          <div class="form-group">
+            <input
+              type="text"
+              name="istate"
+              id="istate"
+              placeholder="enter state name.."
+              class="form-control"
+              autocomplete="on"
+            />
+            <input
+              type="submit"
+              class="btn btn-primary my-4"
+              onclick="fundsearch(this.form); return false"
+            />
+          </div>
+        </form>
+        <div class="container align-items-center justify-content-center my-4">
+          <div class="row align-items-center justify-connten-center">
+            <table class="table shadow">
+              <tr>
+                <td>State name :</td>
+                <td id="msg1">...</td>
+              </tr>
+              <tr>
+                <td>Total cases :</td>
+                <td id="des3">...</td>
+              </tr>
+              <tr>
+                <td>Total deaths :</td>
+                <td id="des14">...</td>
+              </tr>
+              <tr>
+                <td>Total recovered :</td>
+                <td id="des25">...</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+  </div>
+  <script>
+    async function damta(form) {
+      const res = await fetch("https://data.covid19india.org/data.json");
+      const data = await res.json();
+      var e = form.date.value;
+      console.log("intial starting...");
+      for (var i = 0; i < data["cases_time_series"].length; i++) {
+        console.log("strating");
+        if (data["cases_time_series"][i]["dateymd"] == e) {
+          console.log("intial done...");
+          if (data["cases_time_series"][i]["dailyconfirmed"] > 100000) {
+            document.getElementById("msg").innerHTML =
+              data["cases_time_series"][i]["dailyconfirmed"];
+            document.getElementById("msg").className = "text-danger";
+          } else {
+            document.getElementById("msg").innerHTML =
+            data["cases_time_series"][i]["dailyconfirmed"];
+          }
+          document.getElementById("des").innerHTML =
+            data["cases_time_series"][i]["dailydeceased"];
+          document.getElementById("des1").innerHTML =
+            data["cases_time_series"][i]["totalconfirmed"];
+          if (data["cases_time_series"][i]["totalconfirmed"] > 10000000) {
+            document.getElementById("des1").className = "text-danger";
+          } else {
+            document.getElementById("des1").innerHTML =
+              data["cases_time_series"][i]["totalconfirmed"];
+          }
+          document.getElementById("des2").innerHTML =
+            data["cases_time_series"][i]["totalrecovered"];
+          console.log("done");
+        }}}
+
+      async function fundsearch(form) {
+        const res = await fetch("https://data.covid19india.org/data.json");
+        const data = await res.json();
+        var n = document.getElementById("istate").value;
+
+        function capitalizeFirstLetter(string) {
+          return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        var m = capitalizeFirstLetter(n);
+        console.log("statewise staert search");
+        for (let i = 0; i < data["statewise"].length; i++) {
+          console.log("statewise going...");
+          if (data["statewise"][i]["state"] == m) {
+            console.log("statewise search working");
+            document.getElementById("msg1").innerHTML =
+              data["statewise"][i]["state"];
+            document.getElementById("des3").innerHTML =
+              data["statewise"][i]["confirmed"];
+            document.getElementById("des14").innerHTML =
+              data["statewise"][i]["deaths"];
+            document.getElementById("des25").innerHTML =
+              data["statewise"][i]["recovered"];
+          }
+        }
+      }
+  </script>
+</body>
+
+</html>
